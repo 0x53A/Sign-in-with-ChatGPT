@@ -1,7 +1,7 @@
 # Sign in with ChatGPT — browser-only probe
 
 An experimental static PWA testing authorization and inference directly from
-the browser, without an application backend. Originally built for Apteronotus.
+the browser, without an application backend.
 
 **Live:** https://0x53a.github.io/Sign-in-with-ChatGPT/
 
@@ -12,7 +12,9 @@ authorization codes and identity values.
 
 ## Hosting and development
 
-GitHub Pages serves prebuilt files from **main /docs**, with no Actions build.
+GitHub Actions installs locked dependencies, runs protocol and browser tests, builds
+the static app into `dist/`, and deploys that artifact to GitHub Pages on pushes
+to `main`. Pull requests run the same checks without deploying.
 The callback is a real `callback.html` file; no server routing is required.
 
 ```sh
@@ -24,8 +26,10 @@ npm run serve
 
 Local preview: http://127.0.0.1:8766/index.html
 
-Commit regenerated `docs/` files after source changes. The browser test uses
-Chrome (`APTERONOTUS_CHROMIUM` overrides the executable) and a running preview:
+Source is in `src/` (browser logic) and `public/` (HTML, CSS and assets).
+`build.mjs` bundles the app and generates its service worker and static callback.
+Generated `dist/` files are not committed. The browser test uses
+Chrome (`CHROMIUM` overrides the executable) and a running preview:
 
 ```sh
 npm run test:browser
@@ -50,8 +54,11 @@ On localhost, real user sign-in, static callback and browser token exchange
 succeeded, returning precisely the requested scopes with no refresh token.
 Identity verification then failed. Separate Chrome checks identified
 `MissingAllowOriginHeader` CORS errors on discovery and signing-key requests.
-Inference has not yet been tested in the PWA. The HTTPS deployment tests whether
-the hosted origin behaves differently; it is not a claim of provider support.
+On GitHub Pages, OpenAI rejected the HTTPS callback before sign-in with
+`invalid_authorize_request`, parameter `redirect_uri`. Discovery and signing-key
+requests also failed with `MissingAllowOriginHeader` from that HTTPS origin.
+Inference remains untested in the PWA. This is a reproducible compatibility
+probe, not a working or officially endorsed browser integration.
 
 Protocol tests cover PKCE, callback correlation, exact grants and completed
 streamed responses. Chrome checks cover offline index/callback loading,

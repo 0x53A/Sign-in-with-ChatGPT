@@ -5,7 +5,7 @@ import {spawn} from 'node:child_process';
 const output=new URL('./target/',import.meta.url);
 await fs.mkdir(output,{recursive:true});
 const profile=await fs.mkdtemp(new URL('chrome-',output));
-const browser=spawn(process.env.APTERONOTUS_CHROMIUM||'/run/current-system/sw/bin/google-chrome',['--headless=new','--no-sandbox','--disable-dev-shm-usage','--remote-debugging-port=0',`--user-data-dir=${profile}`,'--no-first-run','--no-default-browser-check','about:blank'],{stdio:'ignore'});
+const browser=spawn(process.env.CHROMIUM||'/run/current-system/sw/bin/google-chrome',['--headless=new','--no-sandbox','--disable-dev-shm-usage','--remote-debugging-port=0',`--user-data-dir=${profile}`,'--no-first-run','--no-default-browser-check','about:blank'],{stdio:'ignore'});
 const delay=ms=>new Promise(r=>setTimeout(r,ms));
 async function until(fn){for(let i=0;i<200;i++){try{const r=await fn();if(r)return r;}catch{}await delay(100);}throw Error('Browser check timed out');}
 let ws;
@@ -19,7 +19,7 @@ try{
  const call=(method,params={})=>new Promise((resolve,reject)=>{const id=++seq;const timer=setTimeout(()=>{pending.delete(id);reject(Error(method+' timeout'));},35000);pending.set(id,{resolve,reject,timer});ws.send(JSON.stringify({id,method,params}));});
  const evaluate=async expression=>{const r=await call('Runtime.evaluate',{expression,awaitPromise:true,returnByValue:true});if(r.exceptionDetails)throw Error('Browser evaluation failed');return r.result.value;};
  await call('Page.enable');await call('Network.enable');
- const base=process.env.APTERONOTUS_PROBE_URL||'http://127.0.0.1:8766/';
+ const base=process.env.PROBE_URL||'http://127.0.0.1:8766/';
  await call('Page.navigate',{url:base+'index.html'});
  await until(()=>evaluate("document.getElementById('offline-status')?.textContent.includes('cached')"));
  await until(()=>evaluate('!!navigator.serviceWorker.controller'));

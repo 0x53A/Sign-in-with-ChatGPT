@@ -3,7 +3,7 @@ import {issuer,resource,scopes,transaction,callback,grant,safeCode,completedTool
 
 const base=new URL('./',location.href);
 const redirect=new URL('callback.html',base).href;
-const prefix='apteronotus-pwa-probe-v1:';
+const prefix='browser-oauth-probe-v1:';
 const keys={host:prefix+'host',client:prefix+'client',pending:prefix+'pending',events:prefix+'events'};
 const $=id=>document.getElementById(id);
 let access=null,busy=false,installPrompt=null,events=[];
@@ -90,15 +90,15 @@ $('check').onclick=()=>run('Public endpoints',async()=>{
 $('export').onclick=()=>{
   const report={version:1,origin:location.origin,callback:redirect,scopes,online:navigator.onLine,service_worker:!!navigator.serviceWorker?.controller,events};
   const url=URL.createObjectURL(new Blob([JSON.stringify(report,null,2)+'\n'],{type:'application/json'}));
-  const link=document.createElement('a');link.href=url;link.download='apteronotus-browser-auth-report.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  const link=document.createElement('a');link.href=url;link.download='browser-auth-report.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 };
 addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;$('install').hidden=false;});
 $('install').onclick=async()=>{if(installPrompt){await installPrompt.prompt();installPrompt=null;$('install').hidden=true;}};
 function connection(){$('connection').textContent=navigator.onLine?'Browser only':'Offline shell';}
 addEventListener('online',connection);addEventListener('offline',connection);connection();draw();
 
-const query=window.apteronotusOAuthArrival;
-delete window.apteronotusOAuthArrival;
+const query=window.browserOAuthArrival;
+delete window.browserOAuthArrival;
 if(query){
   await run('Authorization',async()=>{
     const pending=JSON.parse(sessionStorage.getItem(keys.pending)||'null');

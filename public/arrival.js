@@ -3,7 +3,7 @@
 (() => {
   const url = new URL(location.href);
   if (url.searchParams.has('code') || url.searchParams.has('error')) {
-    window.apteronotusOAuthArrival = url.search;
+    window.browserOAuthArrival = url.search;
     history.replaceState(null, '', url.pathname);
   }
 })();

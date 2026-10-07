@@ -9,7 +9,7 @@ export async function transaction({redirect,host,client='dynamic_agent_client'})
   const challenge=encode(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(verifier))));
   const url=new URL(`${issuer}/api/accounts/authorize`);
   url.search=new URLSearchParams({client_id:client,ext_agent_host_id:host,
-    ...(client==='dynamic_agent_client'?{agent_name_hint:'Apteronotus PWA Probe'}:{}),
+    ...(client==='dynamic_agent_client'?{agent_name_hint:'Browser OAuth Probe'}:{}),
     response_type:'code',redirect_uri:redirect,scope:scopes.join(' '),resource,
     state:value.state,nonce:value.nonce,code_challenge_method:'S256',code_challenge:challenge,
   }).toString();

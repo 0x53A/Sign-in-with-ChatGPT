@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {transaction,callback,grant,scopes,completedTool} from './src/protocol.mjs';
 
 test('browser PKCE preserves static callback and exact minimal scopes',async()=>{
- const redirect='https://example.github.io/apteronotus/auth-probe/callback.html';
+ const redirect='https://example.github.io/browser-oauth-probe/callback.html';
  const {value,url}=await transaction({redirect,host:'urn:uuid:test'});
  const parsed=new URL(url);
  assert.equal(parsed.searchParams.get('redirect_uri'),redirect);
